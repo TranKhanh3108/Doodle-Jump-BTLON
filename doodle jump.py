@@ -1,4 +1,4 @@
-import pygame
+import pygame #import thư viện pygame
 from pygame.locals import *
 import sys
 import random
@@ -6,25 +6,25 @@ from button import Button
 
 pygame.init()
 
-SCREEN = pygame.display.set_mode((800, 600))
-pygame.display.set_caption("Menu")
-BG = pygame.image.load("assets/Background.png")
+SCREEN = pygame.display.set_mode((800, 600))  #Tạo khung màn hình
+pygame.display.set_caption("Menu") #Tên nền
+BG = pygame.image.load("assets/Background.png") #Ảnh nền
 
 game_over = False
 
-
+#font chữ - kích thước
 def get_font(size):
     return pygame.font.Font("assets/font.ttf", size)
 
 
 class DoodleJump:
     def __init__(self):
-        self.screen = pygame.display.set_mode((800, 600))
-        self.green = pygame.image.load("assets/green.png").convert_alpha()
+        self.screen = pygame.display.set_mode((800, 600)) # Tạo khung màn có kích thước
+        self.green = pygame.image.load("assets/green.png").convert_alpha() #Load ảnh nền
         pygame.font.init()
-        self.score = 0
-        self.font = pygame.font.SysFont("Arial", 25)
-        self.blue = pygame.image.load("assets/blue.png").convert_alpha()
+        self.score = 0 #Biến điểm cá nhân
+        self.font = pygame.font.SysFont("Arial", 25) #Font chữ
+        self.blue = pygame.image.load("assets/blue.png").convert_alpha() #Load ảnh cho element
         self.red = pygame.image.load("assets/red.png").convert_alpha()
         self.red_1 = pygame.image.load("assets/red_1.png").convert_alpha()
         self.playerRight = pygame.image.load("assets/right.png").convert_alpha()
@@ -33,17 +33,19 @@ class DoodleJump:
         self.playerLeft_1 = pygame.image.load("assets/left_1.png").convert_alpha()
         self.spring = pygame.image.load("assets/spring.png").convert_alpha()
         self.spring_1 = pygame.image.load("assets/spring_1.png").convert_alpha()
-        self.direction = 0
+        self.direction = 0 #Vị trí nhân vật
         self.playerx = 400
         self.playery = 400
         self.platforms = [[400, 500, 0, 0]]
         self.springs = []
-        self.cameray = 0
-        self.jump = 10
-        self.gravity = 0
-        self.xmovement = 0
+        self.cameray = 0 #Camera của game
+        self.jump = 10  #Độ cao nhảy của nhân vật
+        self.gravity = 0 #Trọng lực của nhân vật
+        self.xmovement = 0 #Vị trí mặc định khi di chuyển
 
-    def updatePlayer(self):
+#Hàm update player cập nhật nhân vật chỉnh
+
+    def updatePlayer(self): #Cập nhật trạng thái nhân vật khi nhảy tại chỗ
         if not self.jump:
             self.playery += self.gravity
             self.gravity += 1
@@ -83,6 +85,8 @@ class DoodleJump:
             else:
                 self.screen.blit(self.playerLeft, (self.playerx, self.playery - self.cameray))
 
+#Cập nhật màn hình trạng thái game
+    #Cập nhật mỗi khi nhân vật đi quá màn hình phía trên
     def updatePlatforms(self):
         for p in self.platforms:
             rect = pygame.Rect(p[0], p[1], self.green.get_width() - 10, self.green.get_height())
@@ -90,7 +94,7 @@ class DoodleJump:
                                  self.playerRight.get_height())
             if rect.colliderect(player) and self.gravity and self.playery < (p[1] - self.cameray):
                 if p[2] != 2:
-                    self.jump = 15
+                    self.jump = 15 #độ cao nhảy tại chỗ
                     self.gravity = 0.4
                 else:
                     p[-1] = 1
@@ -103,7 +107,7 @@ class DoodleJump:
                     p[0] -= 5
                     if p[0] <= 0:
                         p[-1] = 1
-
+#Vẽ thêm vật cản
     def drawPlatforms(self):
         for p in self.platforms:
             check = self.platforms[1][1] - self.cameray
@@ -132,7 +136,7 @@ class DoodleJump:
                     self.screen.blit(self.red, (p[0], p[1] - self.cameray))
                 else:
                     self.screen.blit(self.red_1, (p[0], p[1] - self.cameray))
-
+#Vật hỗ trợ: lò xo
         for spring in self.springs:
             if spring[-1]:
                 self.screen.blit(self.spring_1, (spring[0], spring[1] - self.cameray))
@@ -144,6 +148,7 @@ class DoodleJump:
                 self.jump = 50
                 self.cameray -= 50
 
+#Tự động tạo thêm vật cản xanh lá
     def generatePlatforms(self):
         on = 600
         while on > -100:
@@ -158,12 +163,13 @@ class DoodleJump:
             self.platforms.append([x, on, platform, 0])
             on -= 50
 
+#Kẻ nền
     def drawGrid(self):
         for x in range(80):
             pygame.draw.line(self.screen, (222, 222, 222), (x * 12, 0), (x * 12, 600))
             pygame.draw.line(self.screen, (222, 222, 222), (0, x * 12), (800, x * 12))
 
-
+#Màn hình gameover
     def game_over(self, game_over=None):
         bg = pygame.image.load("assets/End.png")
         SCREEN.blit(bg,(0,0))
@@ -183,7 +189,7 @@ class DoodleJump:
                     if event.key == K_SPACE:
                         game_over= False
         self.run()
-
+#Reset game được thực thi
     def run(self):
 
         clock = pygame.time.Clock()
